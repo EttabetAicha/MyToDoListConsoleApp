@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 // Structure pour représenter une tache
 struct Task {
-    int id;
+    int id,deadline;
     char title[100];
     char description[500];
-    char deadline[20];
     char status[30];
 };
 
