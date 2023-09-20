@@ -34,38 +34,61 @@ void addTask(struct Task tasks[], const char *title, const char *desc, const cha
 
 int main() {
     struct Task tasks[MAX_TASK];
-    int choice, deadline;
+    int choice, deadline,rept;
     char title[100], desc[500], status[30];
 
    do {
-        printf("==================================Welcome to the Task Management Application!==================================\n");
-        printf("=      1. Add a new task                                                                                      =\n");
-        printf("=      2. Add multiple tasks                                                                                  =\n");
-        printf("=      3. Display the list of all tasks                                                                       =\n");
-        printf("=      4. Modify a task                                                                                       =\n");
-        printf("=      5. Delete a task                                                                                       =\n");
-        printf("=      6. Search for a task by ID                                                                             =\n");
-        printf("=      7. Search for a task by title                                                                          =\n");
-        printf("=      8. Display statistics                                                                                  =\n");
-        printf("=      9. Quit                                                                                                =\n");
-        printf("==================================================Enter your choice:===========================================\n");
+         printf("==================================Bienvenue dans l'application de gestion de taches!==================================\n");
+        printf("=      1. Ajouter une nouvelle tache                                                                                 =\n");
+        printf("=      2. Ajouter plusieur tache                                                                                     =\n");
+        printf("=      3. Afficher la liste de toutes les taches                                                                     =\n");
+        printf("=      4. Modifier une tache                                                                                         =\n");
+        printf("=      5. Supprimer une tache                                                                                        =\n");
+        printf("=      6. Rechercher une tache par identifiant                                                                       =\n");
+        printf("=      7. Rechercher une tache par titre                                                                             =\n");
+        printf("=      8. Afficher les statiques                                                                                     =\n");
+        printf("=      9. Quitter                                                                                                    =\n");
+        printf("==================================================Entrez votre choix :================================================ \n");
         scanf("%d", &choice);
 
         switch (choice) {
             case 1:
-                printf("Enter the title of the task: ");
+                printf("Enter titre du tache: ");
                 scanf("%99s", title);
-                printf("Enter the description of the task: ");
+                printf("Enter une description du tache : ");
                 scanf("%499s", desc);
-                printf("Enter the status of the task: ");
+                printf("Enter une status pour la tache: ");
                 scanf("%29s", status);
-                printf("Enter the deadline: ");
+                printf("Enter  deadline du tache : ");
                 scanf("%d", &deadline);
                 addTask(tasks, title, desc, status, deadline);
                 break;
             case 2:
-                // Add code to add multiple tasks here
+               
+                printf("Enter the number of tasks to add (1-5): ");
+                scanf("%d", &rept);
+
+                if (rept >= 1 && rept <= 5) {
+                    for (int i = 0; i < rept; i++) {
+                        printf("Enter the title of the task: ");
+                        scanf("%99s", title);
+
+                        printf("Enter the description of the task: ");
+                        scanf("%499s", desc);
+
+                        printf("Enter the status of the task: ");
+                        scanf("%29s", status);
+
+                        printf("Enter the deadline of the task: ");
+                        scanf("%d", &deadline);
+
+                        addTask(tasks, title, desc, status, deadline);
+                    }
+                } else {
+                    printf("Invalid input. Please enter a number between 1 and 5.\n");
+                }
                 break;
+
             case 3:
                 // Add code to display tasks here
                 break;
