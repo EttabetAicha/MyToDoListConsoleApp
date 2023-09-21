@@ -32,19 +32,18 @@ int parseDate(const char* dateStr, struct tm* result) {
 
 int taskCount = 0;
 
-void addTask(struct Task tasks[], int* numTasks) {
+void addTask(struct Task tasks[], int numTasks) {
     // Check if the maximum number of tasks is reached
-    if (*numTasks >= MAX_TASK) {
+    if (numTasks >= MAX_TASK) {
         printf("The maximum number of tasks has been reached.\n");
         return;
     }
-
     // Variables to store user input
     char dateStr[20];
 
     // Create a new task
     struct Task newTask;
-    newTask.id = *numTasks + 1;
+    newTask.id = numTasks + 1;
 
     printf("Enter the title of the task: ");
     scanf(" %[^\n]", newTask.title);
@@ -70,12 +69,12 @@ void addTask(struct Task tasks[], int* numTasks) {
     newTask.creationDate = time(NULL);
 
     // Add the new task to the array
-    tasks[*numTasks] = newTask;
-    (*numTasks)++;
-
+    tasks[numTasks] = newTask;
+    
     printf("\n\t \t \t \t \t *Task added successfully.*\n");
 }
-void addMultipleTasks(struct Task* tasks, int* numTasks) {
+
+void addMultipleTasks(struct Task tasks[], int numTasks) {
     int numNewTasks;
     printf("Combien de taches souhaitez-vous ajouter ? ");
     scanf("%d", &numNewTasks);
@@ -85,18 +84,27 @@ void addMultipleTasks(struct Task* tasks, int* numTasks) {
         addTask(tasks, numTasks);
     }
 }
+
 int compareTasksByTitle(const void* a, const void* b) {
-    const struct Task* taskA = (const struct Task*)a;
-    const struct Task* taskB = (const struct Task*)b;
+    const struct Task* taskA = a;
+    const struct Task* taskB = b;
     return strcmp(taskA->title, taskB->title);
 }
 
-// Comparateur pour le tri par deadline
+
 int compareTasksByDeadline(const void* a, const void* b) {
-    const struct Task* taskA = (const struct Task*)a;
-    const struct Task* taskB = (const struct Task*)b;
-    return difftime(taskA->deadline, taskB->deadline);
+    const struct Task* taskA = a;
+    const struct Task* taskB = b;
+
+    if (taskA->deadline < taskB->deadline) {
+        return -1;
+    } else if (taskA->deadline > taskB->deadline) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
+
 
 void displayTasks(struct Task* tasks, int numTasks) {
        if (numTasks == 0) {
@@ -117,56 +125,52 @@ void displayTasks(struct Task* tasks, int numTasks) {
             case 1:
                     // Triez les taches par ordre alphabétique du titre
                     qsort(tasks, numTasks, sizeof(struct Task), compareTasksByTitle);
-                    // Header row
-                    printf("_____________________________________________________________________________________________________________________________________\n");
-                    printf("| %-14s | %-24s | %-39s | %-19s | %-39s \n", "Identifiant", "Titre", "Description", "Statut","Deadline" );
-                    printf("_____________________________________________________________________________________________________________________________________\n");
-                    // Data rows
+                    printf("____________________________________________________________________________________________________________________________________________________\n");
+                    printf("| %-10s | %-24s | %-60s | %-19s | %-39s\n", "Identifiant", "Titre", "Description", "Statut","Deadline" );
+                    printf("____________________________________________________________________________________________________________________________________________________\n");
                     for (int i = 0; i < numTasks; i++) {
-                        printf("| %-14d | %-24s | %-39s | %-19s | %-39s \n", tasks[i].id, tasks[i].title, tasks[i].desc, tasks[i].status, ctime(&tasks[i].deadline));
-                    }
-                    printf("_____________________________________________________________________________________________________________________________________\n");
-            break;
+                    printf("| %-10d | %-24s | %-60s | %-19s | %-39s \n", tasks[i].id, tasks[i].title, tasks[i].desc, tasks[i].status, ctime(&tasks[i].deadline));}
+                    printf("____________________________________________________________________________________________________________________________________________________\n");
+                    break;
 
-        case 2:
-            // Triez les taches par deadline
-            qsort(tasks, numTasks, sizeof(struct Task), compareTasksByDeadline);
-            printf("_____________________________________________________________________________________________________________________________________\n");
-            printf(" %-14s | %-24s | %-39s | %-19s | %-39s \n", "Identifiant", "Titre", "Description", "Statut","Deadline" );
-            printf("_____________________________________________________________________________________________________________________________________\n");
-            for (int i = 0; i < numTasks; i++) {
-                printf("| %-14d | %-24s | %-39s | %-19s | %-39s \n", tasks[i].id, tasks[i].title, tasks[i].desc, tasks[i].status, ctime(&tasks[i].deadline));
-            }
-            printf("_____________________________________________________________________________________________________________________________________\n");
-            break;
+            case 2:
+                // Triez les taches par deadline
+                qsort(tasks, numTasks, sizeof(struct Task), compareTasksByDeadline);
+                printf("_______________________________________________________________________________________________________________________________________________________\n");
+                printf(" %-10s | %-24s | %-66s | %-19s | %-39s\n", "Identifiant", "Titre", "Description", "Statut","Deadline" );
+                printf("_______________________________________________________________________________________________________________________________________________________\n");
+                for (int i = 0; i < numTasks; i++) {
+                    printf("| %-10d | %-24s | %-66s | %-19s | %-39s\n", tasks[i].id, tasks[i].title, tasks[i].desc, tasks[i].status, ctime(&tasks[i].deadline));
+                }
+                printf("_______________________________________________________________________________________________________________________________________________________\n");
+                break;
         case 3:
             {
                 time_t currentTime = time(NULL);
                 time_t threeDaysLater = currentTime + 3 * 24 * 3600; // 3 jours plus tard
                 printf("Taches dont le deadline est dans 3 jours ou moins :\n");
-                printf("_____________________________________________________________________________________________________________________________________\n");
-                printf(" %-14s | %-24s | %-39s | %-19s | %-39s \n", "Identifiant", "Titre", "Description", "Statut","Deadline" );
-                printf("_____________________________________________________________________________________________________________________________________\n");
+                printf("_______________________________________________________________________________________________________________________________________________________\n");
+                printf(" %-10s | %-24s | %-66s | %-19s | %-39s \n", "Identifiant", "Titre", "Description", "Statut","Deadline" );
                 for (int i = 0; i < numTasks; i++) {
                     if (tasks[i].deadline <= threeDaysLater) {
-                        printf("| %-14d | %-24s | %-39s | %-19s | %-39s \n", tasks[i].id, tasks[i].title, tasks[i].desc, tasks[i].status, ctime(&tasks[i].deadline));
+                        printf("| %-10d | %-24s | %-66s | %-19s | %-39s \n", tasks[i].id, tasks[i].title, tasks[i].desc, tasks[i].status, ctime(&tasks[i].deadline));
                     }
                 }
-                printf("_____________________________________________________________________________________________________________________________________\n");
+                printf("______________________________________________________________________________________________________________________________________________________\n");
 
             }
             break;
         case 4:
             printf("Tout les tache :\n");
-            printf("_____________________________________________________________________________________________________________________________________\n");
-            printf(" %-14s | %-24s | %-39s | %-19s | %-39s \n", "Identifiant", "Titre", "Description", "Statut","Deadline" );
-            printf("_____________________________________________________________________________________________________________________________________\n");
+            printf("_________________________________________________________________________________________________________________________________________________________\n");
+            printf(" %-10s | %-24s | %-66s | %-19s | %-39s \n", "Identifiant", "Titre", "Description", "Statut","Deadline" );
+            printf("________________________________________________________________________________________________________________________________________________________\n");
             for (int i = 0; i < numTasks; i++) {
-                printf("| %-14d | %-24s | %-39s | %-19s | %-39s \n", tasks[i].id, tasks[i].title, tasks[i].desc, tasks[i].status, ctime(&tasks[i].deadline));
-                printf("_____________________________________________________________________________________________________________________________________\n");
+                printf("| %-10d | %-24s | %-66s | %-19s | %-39s \n", tasks[i].id, tasks[i].title, tasks[i].desc, tasks[i].status, ctime(&tasks[i].deadline));
+                printf("___________________________________________________________________________________________________________________________________________________\n");
 
             }
-            printf("_____________________________________________________________________________________________________________________________________\n");
+            printf("______________________________________________________________________________________________________________________________________________________\n");
             break;
 
         default:
@@ -174,11 +178,107 @@ void displayTasks(struct Task* tasks, int numTasks) {
             break;
     }
 }
+void modifyTask(struct Task* tasks, int numTasks) {
+    int taskId;
+    printf("Enter the ID of the task to modify: ");
+    scanf("%d", &taskId);
+
+    // Recherchez la tache par son identifiant
+    int taskIndex = -1;
+    for (int i = 0; i < numTasks; i++) {
+        if (tasks[i].id == taskId) {
+            taskIndex = i;
+            break;
+        }
+    }
+
+    if (taskIndex == -1) {
+        printf("Task not found.\n");
+        return;
+    }
+
+    // Affichez les datails de la tache actuelle
+    printf("Current Task:\n");
+    printf("ID: %d\n", tasks[taskIndex].id);
+    printf("Title: %s\n", tasks[taskIndex].title);
+    printf("Description: %s\n", tasks[taskIndex].desc);
+    printf("Deadline: %s", ctime(&tasks[taskIndex].deadline));
+    printf("Status: %s\n", tasks[taskIndex].status);
+
+    // Menu de modification
+    printf("\nModification Menu:\n");
+    printf("1. Modify description\n");
+    printf("2. Modify status\n");
+    printf("3. Modify deadline\n");
+    printf("4. Cancel modification\n");
+    printf("Select an option: ");
+
+    int choice;
+    scanf("%d", &choice);
+
+    switch (choice) {
+        case 1:
+            printf("Enter the new description: ");
+            scanf(" %[^\n]", tasks[taskIndex].desc);
+            break;
+        case 2:
+            printf("Enter the new status: ");
+            scanf(" %[^\n]", tasks[taskIndex].status);
+            break;
+        case 3:
+            printf("Enter the new deadline (in YYYY-MM-DD format): ");
+            char dateStr[20];
+            scanf("%19s", dateStr);
+            struct tm newDeadline;
+            // Clear the input buffer
+            int c;
+            while ((c = getchar()) != '\n' && c != EOF);
+
+            if (parseDate(dateStr, &newDeadline)) {
+                tasks[taskIndex].deadline = mktime(&newDeadline);
+                printf("Deadline modified successfully.\n");
+            } else {
+                printf("Invalid date format. Please use YYYY-MM-DD.\n");
+            }
+            break;
+        case 4:
+            printf("Modification canceled.\n");
+            break;
+        default:
+            printf("Invalid option.\n");
+            break;
+    }
+}
+void deleteTask(struct Task* tasks, int* numTasks, int taskId) {
+    // Recherchez la tache par son identifiant
+    int taskIndex = -1;
+    for (int i = 0; i < *numTasks; i++) {
+        if (tasks[i].id == taskId) {
+            taskIndex = i;
+            break;
+        }
+    }
+
+    if (taskIndex == -1) {
+        printf("Tache non trouvae.\n");
+        return;
+    }
+
+    // Supprimez la tache en daplaçant les alaments suivants vers le haut
+    for (int i = taskIndex; i < *numTasks - 1; i++) {
+        tasks[i] = tasks[i + 1];
+    }
+
+    (*numTasks)--;
+    printf("Tache supprimae avec succes.\n");
+}
+
 
 
 int main() {
     struct Task tasks[100]; // Tableau de taches (modifiable pour garer plus de taches)
     int numTasks = 0;
+    int taskId;
     while (1) {
     printf("\n  ================================Bienvenue dans l'application de gestion de taches!========\n\n");
     printf("  *      \t \t  \t 1. Ajouter une nouvelle tache                             *\n");
@@ -205,10 +305,12 @@ int main() {
                 break;
 
             case 4:
-                // Add code to modify a task here
+               modifyTask(tasks, numTasks);
                 break;
             case 5:
-                // Add code to delete a task here
+                printf("Entrez l'identifiant de la tache a supprimer: ");
+                scanf("%d", &taskId);
+                deleteTask(tasks, &numTasks, taskId);
                 break;
             case 6:
                 // Add code to search for a task by ID here
